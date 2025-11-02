@@ -1,5 +1,5 @@
 import streamlit as st
-from transformers import ViTForImageClassification, ViTImageProcessor
+from transformers import AutoModelForImageClassification, AutoImageProcessor
 import torch
 from PIL import Image
 import json
@@ -29,14 +29,12 @@ os.makedirs(LOCAL_CACHE, exist_ok=True)
 @st.cache_resource
 def load_model_from_hub():
     try:
-        model = ViTForImageClassification.from_pretrained(
-        "MalaikaNaveed1/food-recognition-vit",
-        ignore_mismatched_sizes=True
+        model = AutoModelForImageClassification.from_pretrained(
+            MODEL_REPO,
+            ignore_mismatched_sizes=True
         )
+        processor = AutoImageProcessor.from_pretrained(MODEL_REPO)
 
-        processor = ViTImageProcessor.from_pretrained(
-        "MalaikaNaveed1/food-recognition-vit"
-        )
         # Get label mapping from model config
         id2label = model.config.id2label
         return model, processor, id2label
@@ -160,10 +158,8 @@ elif section == "Predict":
             for i, (p, l) in enumerate(zip(top_probs[0], top_labels[0]), 1):
                 label = id2label[l.item()]
                 confidence = p.item() * 100
-                st.write(f"**{i}. {label.replace('_', ' ').title()}**")
-                st.progress(confidence / 100)
-                st.write(f"Confidence: {confidence:.2f}%")
-                st.write("")
+                st.write(f"**{i}. {label.replace('_', ' ').title()}** - {confidence:.2f}%")
+
         except Exception as e:
             st.error(f"Error processing image: {str(e)}")
 
