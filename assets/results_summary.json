@@ -1,0 +1,13 @@
+{
+  "model_name": "google/vit-base-patch16-224",
+  "num_epochs": 5,
+  "batch_size": 32,
+  "learning_rate": 2e-05,
+  "test_accuracy": 0.8569306930693069,
+  "top3_accuracy": 0.9479207920792079,
+  "top5_accuracy": 0.9674257425742574,
+  "num_classes": 101,
+  "train_samples": 80800,
+  "val_samples": 10100,
+  "test_samples": 10100
+}
