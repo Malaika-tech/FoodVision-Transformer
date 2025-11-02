@@ -11,9 +11,9 @@ import requests
 # CONFIGURATION
 # ======================================================
 MODEL_REPO = "MalaikaNaveed1/food-recognition-vit"  # Hugging Face repo
-LOCAL_CACHE = "./hf_cache"  # Folder to cache downloaded files locally
+LOCAL_CACHE = "./hf_cache"  # Cache folder for downloaded visuals
 
-# Additional visual/metrics files (optional)
+# Optional metric/visual files stored on Hugging Face
 RESULTS_FILE = "results_summary.json"
 REPORT_FILE = "classification_report.csv"
 CONFUSION_FILE = "confusion_matrix.png"
@@ -29,15 +29,18 @@ os.makedirs(LOCAL_CACHE, exist_ok=True)
 @st.cache_resource
 def load_model_from_hub():
     try:
-        # Load model and processor from your HF repo
         model = ViTForImageClassification.from_pretrained(
-            MODEL_REPO,
-            use_safetensors=True
+        "MalaikaNaveed1/food-recognition-vit",
+        ignore_mismatched_sizes=True
         )
-        processor = ViTImageProcessor.from_pretrained(MODEL_REPO)
-        
+
+        processor = ViTImageProcessor.from_pretrained(
+        "MalaikaNaveed1/food-recognition-vit"
+        )
+        # Get label mapping from model config
         id2label = model.config.id2label
         return model, processor, id2label
+
     except Exception as e:
         st.error(f"Error loading model from Hugging Face: {str(e)}")
         return None, None, None
@@ -64,7 +67,7 @@ section = st.sidebar.radio("Go to:", ["Overview", "Visualizations", "Predict"])
 if section == "Overview":
     st.subheader("📋 Model Overview")
 
-    # Try loading results summary
+    # Load results summary from Hugging Face
     results_path = os.path.join(LOCAL_CACHE, RESULTS_FILE)
     if not os.path.exists(results_path):
         url = f"https://huggingface.co/{MODEL_REPO}/resolve/main/{RESULTS_FILE}"
